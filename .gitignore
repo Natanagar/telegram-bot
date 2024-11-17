@@ -1,1 +1,2 @@
-*.envgi
+.env
+node_modules
