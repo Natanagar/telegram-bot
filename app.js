@@ -5,11 +5,27 @@ const { OAuth2Client } = require('google-auth-library');
 require('dotenv').config();
 
 const app = express();
-const port = 3000;
+
+// Environment variables with defaults
+const port = process.env.PORT || 3000;
+const nodeEnv = process.env.NODE_ENV || 'development';
+const domain = process.env.DOMAIN || `http://localhost:${port}`;
+
+
+// Production security middleware
+if (nodeEnv === 'production') {
+    const helmet = require('helmet');
+    app.use(helmet());
+}
 
 // Telegram Bot setup
 const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
-const bot = new TelegramBot(telegramToken, { polling: true });
+const bot = new TelegramBot(telegramToken, { polling: true,
+    // Add webhook support for production
+    webHook: nodeEnv === 'production' ? {
+        port: port
+    } : false
+});
 
 // Google Calendar API setup
 const REDIRECT_URI = 'http://localhost:3000';  // Changed: Using root path only
@@ -131,8 +147,18 @@ app.get('/', async (req, res) => {
     }
 });
 
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.info('SIGTERM signal received.');
+    console.log('Closing HTTP server...');
+    server.close(() => {
+        console.log('HTTP server closed.');
+        process.exit(0);
+    });
+});
+
 // Start server
-app.listen(port, () => {
-    console.log(`Server running at ${REDIRECT_URI}`);
+const server = app.listen(port, () => {
+    console.log(`Server running in ${nodeEnv} mode on ${domain}`);
     console.log('Telegram bot is active');
 });

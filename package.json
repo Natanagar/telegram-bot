@@ -1,11 +1,12 @@
 {
-  "name": "telegram-bot",
+  "name": "telegram-calendar-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Telegram bot with Google Calendar integration",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +16,7 @@
     "express": "^4.21.1",
     "google-auth-library": "^9.15.0",
     "googleapis": "^144.0.0",
-    "node-telegram-bot-api": "^0.66.0"
+    "node-telegram-bot-api": "^0.66.0",
+    "helmet": "^5.0.0"
   }
 }
